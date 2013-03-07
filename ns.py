@@ -28,3 +28,14 @@ def nation_census(nation, census_name):
 def region_shard(region, shard):
     return ns_api({'region' : region, 'q' : shard})
 
+def wa_shard(shard, wa=1):
+    return ns_api({'wa' : wa, 'q' : shard})
+
+def wa_members(region = None):
+    members = wa_shard('members').find('MEMBERS').text.split(',')
+    if region:
+        residents = region_shard(region, 'nations').find('NATIONS').text.split(':')
+        return set(members).intersection(residents)
+    else:
+        return set(members)
+
