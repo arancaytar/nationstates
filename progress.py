@@ -1,35 +1,49 @@
 import sys
 import time
 
-def iterator(it, out = sys.stderr, size = 60, prefix = ""):
+def format_duration(r):
+    if r >= 31536000:
+        return "{y} year{yp}, {d} day{dp}, {h:02d}:{m:02d}:{s:02d}".format(
+            y=int(r)//31536000,
+            yp=['', 's'][int(r)//31536000 != 1],
+            d=int(r%31536000)//86400,
+            dp=['', 's'][int(r%31536000)//86400 != 1],
+            h=int(r%86400)//3600,
+            m=int(r%3600)//60,
+            s=int(r%60))        
+    elif r >= 86400:
+        return "{d} day{dp}, {h:02d}:{m:02d}:{s:02d}".format(
+            d=int(r)//86400, 
+            dp=['', 's'][int(r)//86400 != 1],
+            h=int(r%86400)//3600,
+            m=int(r%3600)//60,
+            s=int(r%60))
+    else:
+        return "{h:02d}:{m:02d}:{s:02d}".format(
+            h=int(r%86400)//3600,
+            m=int(r%3600)//60,
+            s=int(r%60))            
+
+
+def iterator(it, out = sys.stderr, size = 50, prefix = ""):
     count = len(it)
     start = time.time()
     def _eta(_i):
-        if _i == 0:
-            return ""
-        r = (time.time() - start) * (count-_i) / _i
-        if r > 86400:
-            return "{d} days, {h:03d}:{m:03d}:{s:03d}".format(
-                days=int(r)//86400, 
-                h=int(r%86400)//3600,
-                m=int(r%3600)//60,
-                s=int(r%60))
+        if _i > 0:
+            return (time.time() - start) * (count-_i) / _i
         else:
-            return "{h:02d}:{m:02d}:{s:02d}".format(
-                h=int(r%86400)//3600,
-                m=int(r%3600)//60,
-                s=int(r%60))            
-
+            return 0
     def _show(_i):
         x = int(size*_i/count)
-        out.write("{prefix}[{done}{throb}{remaining}] {current}/{total} {eta}\r".format(
+        out.write("{prefix}[{done}{throb}{remaining}] {current}/{total} {elapsed} {eta}\r".format(
                 prefix=prefix,
                 done="#"*x,
                 throb=["|","/","-","\\"][_i%4],
                 remaining="."*(size-x),
                 current=_i,
                 total=count,
-                eta=_eta(_i)
+                elapsed=format_duration(time.time() - start),
+                eta=format_duration(_eta(_i))
                 ))
         out.flush()
     
