@@ -14,6 +14,12 @@ seconds. Note that this throttling is only done on a per-thread basis, so only
 one instance of the client may run simultaneously; your address will otherwise
 be temporarily blocked by the NationStates server.
 
+## INSTALL
+
+The bot can be used as-is. Please consider placing your email address
+in a file named `email.txt` in the main folder; this will be included in the
+user agent and allow NationStates admins to contact you.
+
 ## LICENSE
 
 This code is available under the GNU General Public License, v3 and later.

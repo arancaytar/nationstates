@@ -5,13 +5,20 @@ import throttle
 HTTP = urllib3.HTTPConnectionPool('www.nationstates.net')
 CENSUS = dict(map(lambda z:(z[1], int(z[0])), (s.split("\t") for s in open('censusscore.txt').read().strip().split("\n"))))
 THROTTLE = throttle.Throttler(30, 48)
+try:
+    EMAIL = open('email.txt').read().strip()
+except IOError:
+    EMAIL = ''
+HEADERS = {
+  'User-agent': 'Ermarian (developer: +https://github.com/cburschka/nationstates) (operator: {})'.format(EMAIL)
+}
 
 def ns_api(fields):
     THROTTLE.wait()
     url = '/cgi-bin/api.cgi?' + '&'.join(
             '{0}={1}'.format(a, b) for a,b in fields.items()
             )
-    r = HTTP.request('GET', url)
+    r = HTTP.request('GET', url, headers=HEADERS)
     if r.status == 421:
         raise ValueError("Scraper is currently blocked.")
     elif r.status != 200:
