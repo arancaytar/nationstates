@@ -1,12 +1,14 @@
 import urllib3
 import xml.etree.ElementTree as xml
 import throttle
+import os
 
 HTTP = urllib3.HTTPConnectionPool('www.nationstates.net')
-CENSUS = dict(map(lambda z:(z[1], int(z[0])), (s.split("\t") for s in open('censusscore.txt').read().strip().split("\n"))))
+__DIR__ = os.path.dirname(__file__)
+CENSUS = dict(map(lambda z:(z[1], int(z[0])), (s.split("\t") for s in open(__DIR__ + '/censusscore.txt').read().strip().split("\n"))))
 THROTTLE = throttle.Throttler(30, 48)
 try:
-    EMAIL = open('email.txt').read().strip()
+    EMAIL = open(__DIR__ + '/email.txt').read().strip()
 except IOError:
     EMAIL = ''
 HEADERS = {
