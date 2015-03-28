@@ -2,13 +2,13 @@ import urllib3
 import xml.etree.ElementTree as xml
 import throttle
 
-HTTP = urllib3.PoolManager()
+HTTP = urllib3.HTTPConnectionPool('www.nationstates.net')
 CENSUS = dict(map(lambda z:(z[1], int(z[0])), (s.split("\t") for s in open('censusscore.txt').read().strip().split("\n"))))
 THROTTLE = throttle.Throttler(30, 48)
 
 def ns_api(fields):
     THROTTLE.wait()
-    url = 'http://www.nationstates.net/cgi-bin/api.cgi?' + '&'.join(
+    url = '/cgi-bin/api.cgi?' + '&'.join(
             '{0}={1}'.format(a, b) for a,b in fields.items()
             )
     r = HTTP.request('GET', url)
