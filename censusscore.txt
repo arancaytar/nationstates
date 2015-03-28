@@ -67,3 +67,5 @@
 66	world assembly endorsements
 67	averageness
 68	human development index
+69	primitiveness
+70	scientific advancement
