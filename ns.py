@@ -65,7 +65,7 @@ def loadxml(element):
     data = element.text
 
     if element.tag == 'ENDORSEMENTS':
-        return data.split(',')
+        return data.split(',') if data else []
     elif element.tag == 'NATIONS':
         return data.split(':') # why.
 
