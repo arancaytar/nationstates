@@ -12,9 +12,9 @@ THROTTLE = throttle.Throttler(30, 48)
 try:
     EMAIL = open(__DIR__ + '/email.txt').read().strip()
 except IOError:
-    EMAIL = ''
+    EMAIL = '-'
 HEADERS = {
-  'User-agent': 'Ermarian (developer: +https://github.com/cburschka/nationstates) (operator: {})'.format(EMAIL)
+  'User-agent': 'Ermarian (developer: +https://github.com/arancaytar/nationstates) (operator: {})'.format(EMAIL)
 }
 
 def ns_api(fields):
