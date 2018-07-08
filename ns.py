@@ -51,3 +51,33 @@ def wa_members(region = None):
     else:
         return set(members)
 
+
+def loadxml(element):
+    if len(element):
+        data = {}
+        for child in element:
+            k = str(child.tag).lower()
+            if 'type' in child.attrib:
+                k = child.attrib['type']
+            data[k] = loadxml(child)
+        return data
+
+    data = element.text
+
+    if element.tag == 'ENDORSEMENTS':
+        return data.split(',')
+
+    if element.tag == 'UNSTATUS':
+        return data == 'WA Member'
+
+    try:
+        return int(data)
+    except ValueError:
+        pass
+
+    try:
+        return float(data)
+    except ValueError:
+        pass
+
+    return data
