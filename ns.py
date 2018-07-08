@@ -1,9 +1,11 @@
 import urllib3
+import certifi
 import xml.etree.ElementTree as xml
 import throttle
 import os
 
-HTTP = urllib3.HTTPConnectionPool('www.nationstates.net')
+ROOT = 'https://www.nationstates.net'
+HTTP = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 __DIR__ = os.path.dirname(__file__)
 CENSUS = dict(map(lambda z:(z[1], int(z[0])), (s.split("\t") for s in open(__DIR__ + '/censusscore.txt').read().strip().split("\n"))))
 THROTTLE = throttle.Throttler(30, 48)
@@ -17,7 +19,7 @@ HEADERS = {
 
 def ns_api(fields):
     THROTTLE.wait()
-    url = '/cgi-bin/api.cgi?' + '&'.join(
+    url = ROOT + '/cgi-bin/api.cgi?' + '&'.join(
             '{0}={1}'.format(a, b) for a,b in fields.items()
             )
     r = HTTP.request('GET', url, headers=HEADERS)
