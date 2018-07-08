@@ -30,17 +30,18 @@ def ns_api(fields):
     THROTTLE.register()
     return xml.fromstring(r.data)
 
-def nation_shard(nation, shard):
-    return ns_api({'nation' : nation, 'q' : shard})
+def nation_shard(nation, *shards):
+    return ns_api({'nation' : nation, 'q' : '+'.join(shards)})
 
-def nation_census(nation, census_name):
-    return nation_shard(nation, 'censusscore-{0}'.format(CENSUS[census_name])).find('CENSUSSCORE').text
+def nation_census(nation, *census_names):
+    to_shard = lambda name: 'censusscore-{0}'.format(CENSUS[name])
+    return nation_shard(nation, *map(to_shard, census_names)).find('CENSUSSCORE').text
 
-def region_shard(region, shard):
-    return ns_api({'region' : region, 'q' : shard})
+def region_shard(region, *shards):
+    return ns_api({'region' : region, 'q' : '+'.join(shards)})
 
-def wa_shard(shard, wa=1):
-    return ns_api({'wa' : wa, 'q' : shard})
+def wa_shard(*shards, council_id=1):
+    return ns_api({'wa' : council_id, 'q' : '+'.join(shards)})
 
 def wa_members(region = None):
     members = wa_shard('members').find('MEMBERS').text.split(',')
