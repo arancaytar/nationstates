@@ -25,8 +25,10 @@ def ns_api(fields):
     r = HTTP.request('GET', url, headers=HEADERS)
     if r.status == 421:
         raise ValueError("Scraper is currently blocked.")
+    elif r.status == 404:
+        raise ValueError("Requested entity does not exist.")
     elif r.status != 200:
-        raise ValueError("Unknown error. Please visit {0} for details.".format(url))
+        raise ValueError("Unknown error {}. Please visit {} for details.".format(r.status, url))
     THROTTLE.register()
     return xml.fromstring(r.data)
 
