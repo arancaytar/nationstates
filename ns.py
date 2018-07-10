@@ -9,10 +9,7 @@ HTTP = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 __DIR__ = os.path.dirname(__file__)
 CENSUS = dict(map(lambda z:(z[1], int(z[0])), (s.split("\t") for s in open(__DIR__ + '/censusscore.txt').read().strip().split("\n"))))
 THROTTLE = throttle.Throttler(30, 48)
-try:
-    EMAIL = open(__DIR__ + '/email.txt').read().strip()
-except IOError:
-    EMAIL = '-'
+EMAIL = os.environ.setdefault('NATIONSTATES_EMAIL', '-')
 HEADERS = {
   'User-agent': 'Ermarian (developer: +https://github.com/arancaytar/nationstates) (operator: {})'.format(EMAIL)
 }
