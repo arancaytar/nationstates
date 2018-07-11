@@ -1,17 +1,18 @@
 import urllib3
 import certifi
 import xml.etree.ElementTree as xml
-import throttle
 import os
+
+from . import census
+from . import throttle
 
 ROOT = 'https://www.nationstates.net'
 HTTP = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-__DIR__ = os.path.dirname(__file__)
-CENSUS = dict(map(lambda z:(z[1], int(z[0])), (s.split("\t") for s in open(__DIR__ + '/censusscore.txt').read().strip().split("\n"))))
 THROTTLE = throttle.Throttler(30, 48)
-EMAIL = os.environ.setdefault('NATIONSTATES_EMAIL', '-')
 HEADERS = {
-  'User-agent': 'Ermarian (developer: +https://github.com/arancaytar/nationstates) (operator: {})'.format(EMAIL)
+  'User-agent': 'Ermarian (developer: +https://github.com/arancaytar/nationstates) (operator: {})'.format(
+    os.environ.setdefault('NATIONSTATES_EMAIL', '-')
+  )
 }
 
 def ns_api(fields):
@@ -33,7 +34,7 @@ def nation_shard(nation, *shards):
     return ns_api({'nation' : nation, 'q' : '+'.join(shards)})
 
 def nation_census(nation, *census_names):
-    to_shard = lambda name: 'censusscore-{0}'.format(CENSUS[name])
+    to_shard = lambda name: 'censusscore-{0}'.format(census.CENSUS_REVERSE[name])
     return nation_shard(nation, *map(to_shard, census_names)).find('CENSUSSCORE').text
 
 def region_shard(region, *shards):

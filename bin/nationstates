@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+import nationstates
+import argparse
+import json
+import yaml
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Access the NS API.')
+
+    parser.add_argument('type', type=str, help='The type of entity to access.', choices=['nation', 'region'])
+    parser.add_argument('name', type=str, help='Name of entity.')
+    parser.add_argument('fields', type=str, nargs='*', help='Fields to query.', default=[])
+    parser.add_argument('--format', type=str, help='Format. Defaults to txt for single scalar values, json otherwise.', choices=['json', 'yaml', 'txt'])
+
+    return parser.parse_args()
+
+def main(args):
+    if args.type == 'region':
+        method = nationstates.region_shard
+    elif args.type == 'nation':
+        method = nationstates.nation_shard
+
+    raw_data = method(args.name, *args.fields)
+    data = nationstates.loadxml(raw_data)
+
+    if type(data) is dict and len(data) == 1:
+        data = list(data.values())[0]
+
+    is_complex = type(data) in (list, dict)
+
+    # Default format.
+    args.format = args.format or ('json' if is_complex else 'txt')
+
+    # Force plaintext to json for non-scalars, and also grumble about it.
+    if is_complex and args.format == 'txt':
+        print("Your result is not a scalar value, and cannot be printed in plain text.", file=sys.stderr)
+        args.format = 'json'
+
+    if args.format == 'txt':
+        print(data)
+    elif args.format == 'json':
+        print(json.dumps(data, indent=4))
+    elif args.format == 'yaml':
+        print(yaml.dump(data, indent=4, default_flow_style=False))
+
+main(get_args())
