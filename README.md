@@ -1,5 +1,5 @@
 This is a client implementation of the XML API of the game NationStates 
-(http://www.nationstates.net), allowing different queries on the game data.
+(https://www.nationstates.net), allowing different queries on the game data.
 
 ## Installation
 
